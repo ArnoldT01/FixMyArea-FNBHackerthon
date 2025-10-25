@@ -8,5 +8,9 @@ export default function AuthRoutesLayout() {
         return <Redirect href={"/(home)"} />
     }
 
-    return <Stack />
+    return (
+        <Stack>
+            <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        </Stack>
+    )
 }

@@ -10,57 +10,83 @@ export default function Page() {
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
 
-  // Handle the submission of the sign-in form
   const onSignInPress = async () => {
     if (!isLoaded) return
 
-    // Start the sign-in process using the email and password provided
     try {
       const signInAttempt = await signIn.create({
         identifier: emailAddress,
         password,
       })
 
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
       if (signInAttempt.status === 'complete') {
         await setActive({ session: signInAttempt.createdSessionId })
         router.replace('/')
       } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
         console.error(JSON.stringify(signInAttempt, null, 2))
       }
     } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
       console.error(JSON.stringify(err, null, 2))
     }
   }
 
   return (
-    <View>
-      <Text>Sign in</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+
+      <Text style={{ fontSize: 50, fontWeight: 'bold', marginTop: 50, }}>
+        Sign in
+      </Text>
+
+      <Text style={{ fontSize: 16, paddingVertical: 15, paddingHorizontal: 16, textAlign: 'center', marginBottom: 50, width: '80%' }} >
+        Enter you email and password to access your account
+      </Text>
+
       <TextInput
         autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
         onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+        style={{
+          backgroundColor: 'white',
+          borderRadius: 50,
+          width: '80%',
+          paddingHorizontal: 16,
+          paddingVertical: 15,
+          fontSize: 16,
+          marginBottom: 20,
+        }}
       />
       <TextInput
         value={password}
         placeholder="Enter password"
         secureTextEntry={true}
         onChangeText={(password) => setPassword(password)}
+        style={{
+          backgroundColor: 'white',
+          borderRadius: 50,
+          width: '80%',
+          paddingHorizontal: 16,
+          paddingVertical: 15,
+          fontSize: 16,
+          marginBottom: 50,
+        }}
       />
-      <TouchableOpacity onPress={onSignInPress}>
-        <Text>Continue</Text>
+
+      <TouchableOpacity onPress={onSignInPress} style={{ backgroundColor: '#3db67e', width: '80%', borderRadius: 50, marginBottom: 40, }}>
+        <Text style={{ fontSize: 16, paddingVertical: 15, paddingHorizontal: 16, textAlign: 'center', color: '#ffffff', fontWeight: '700' }} >Continue</Text>
       </TouchableOpacity>
-      <View style={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-        <Link href="/sign-up">
-          <Text>Sign up</Text>
+
+      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+        <Text>Don't have an account? </Text>
+        <Link href="/(auth)/sign-up" asChild>
+          <Text style={{ color: "#007AFF", fontWeight: "700" }}>Sign Up Here</Text>
         </Link>
       </View>
+
     </View>
   )
 }
+
+
+// add visible to user error handling
+// clean up repeated code
