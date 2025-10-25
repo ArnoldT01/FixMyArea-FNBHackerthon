@@ -56,7 +56,7 @@ export default function SignUpScreen() {
 
       if (signUpAttempt.status === 'complete') {
         await setActive({ session: signUpAttempt.createdSessionId });
-        router.replace("/(home)");
+        router.replace("/(home)/(tabs)/home");
       } else {
         setErrorMessage('Something went wrong. Please try again.');
       }
