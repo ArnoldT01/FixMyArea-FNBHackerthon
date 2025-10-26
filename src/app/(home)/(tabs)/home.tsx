@@ -1,11 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
-import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useEffect, useRef, useState, useMemo } from "react";
+import {
+    Text,
+    View,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Alert,
+} from "react-native";
+import MapView, { PROVIDER_DEFAULT } from "react-native-maps";
 import * as Location from "expo-location";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { icons } from "@/constants";
+import IssueViewCard from "@/components/IssueViewCard";
 
 export default function Home() {
     const mapRef = useRef<MapView>(null);
+    const bottomSheetRef = useRef<BottomSheet>(null);
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [watcher, setWatcher] = useState<Location.LocationSubscription | null>(null);
 
@@ -37,14 +48,6 @@ export default function Home() {
                 (loc) => {
                     const { latitude, longitude } = loc.coords;
                     setLocation({ latitude, longitude });
-
-                    mapRef.current?.animateCamera({
-                        center: { latitude, longitude },
-                        pitch: 0,
-                        heading: 0,
-                        altitude: 1000,
-                        zoom: 16,
-                    });
                 }
             );
 
@@ -68,7 +71,10 @@ export default function Home() {
         }
     };
 
+    const snapPoints = useMemo(() => ["60%"], []);
+
     return (
+        <GestureHandlerRootView style={{ flex: 1 }}>
         <View style={styles.container}>
             <MapView
                 ref={mapRef}
@@ -82,7 +88,25 @@ export default function Home() {
             <TouchableOpacity style={styles.customLocationButton} onPress={centerOnUser}>
                 <Image source={icons.point} style={styles.locationIcon} />
             </TouchableOpacity>
+
+            <BottomSheet
+                ref={bottomSheetRef}
+                index={0}
+                snapPoints={snapPoints}
+                backgroundStyle={styles.sheetBackground}
+                handleIndicatorStyle={styles.handle}
+            >
+                <BottomSheetView style={styles.sheetContent}>
+                    <Text style={styles.sheetTitle}>Reported Issues</Text>
+
+                    <IssueViewCard />
+                    <IssueViewCard />
+                    <IssueViewCard />
+
+                </BottomSheetView>
+            </BottomSheet>
         </View>
+        </GestureHandlerRootView>
     );
 }
 
@@ -104,6 +128,25 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 2,
         elevation: 3,
+        zIndex: 10,
     },
     locationIcon: { width: 20, height: 20, resizeMode: "contain" },
+    sheetBackground: {
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    handle: {
+        backgroundColor: "#ccc",
+        width: 40,
+    },
+    sheetContent: {
+        flex: 1,
+        paddingHorizontal: 16,
+    },
+    sheetTitle: {
+        fontSize: 18,
+        fontWeight: "600",
+        marginBottom: 12,
+    },
 });
