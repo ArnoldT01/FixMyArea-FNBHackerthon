@@ -1,18 +1,23 @@
 import { icons } from "@/constants";
 import { Tabs } from "expo-router";
-import { Image, ImageSourcePropType, View, StyleSheet } from "react-native";
+import { Image, ImageSourcePropType, StyleSheet, Text, View } from "react-native";
 
-const TabIcon = ({
-    source,
-    focused,
-}: {
+type TabIconProps = {
     source: ImageSourcePropType;
     focused: boolean;
-}) => (
-    <View style={[ styles.outerCircle, focused && styles.outerCircleFocused, ]}>
-        <View style={[ styles.innerCircle, focused && styles.innerCircleFocused, ]}>
-            <Image source={source} style={styles.icon} resizeMode="contain" />
+    label: string;
+};
+
+const TabIcon = ({ source, focused, label }: TabIconProps) => (
+    <View style={styles.tabContainer}>
+        <View style={[styles.outerCircle, focused && styles.outerCircleFocused]}>
+            <View style={[styles.innerCircle, focused && styles.innerCircleFocused]}>
+                <Image source={source} style={styles.icon} resizeMode="contain" />
+            </View>
         </View>
+        <Text style={[styles.tabLabel]}>
+            {label}
+        </Text>
     </View>
 );
 
@@ -52,16 +57,20 @@ const Layout = () => {
                 options={{
                     title: "Home",
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} source={icons.home} />,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} source={icons.home} label="Home" />
+                    ),
                 }}
             />
 
             <Tabs.Screen
                 name="all-issues"
                 options={{
-                    title: "AllIssues",
+                    title: "All Issues",
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} source={icons.list} />,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} source={icons.list} label="Issues" />
+                    ),
                 }}
             />
 
@@ -70,18 +79,23 @@ const Layout = () => {
                 options={{
                     title: "Profile",
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} source={icons.profile} />,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} source={icons.profile} label="Profile" />
+                    ),
                 }}
             />
         </Tabs>
-    )
+    );
 };
 
 export default Layout;
 
 const styles = StyleSheet.create({
+    tabContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    },
     outerCircle: {
-        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 9999,
@@ -104,4 +118,9 @@ const styles = StyleSheet.create({
         height: 28,
         tintColor: 'white',
     },
+    tabLabel: {
+        fontSize: 9,
+        color: 'white',
+        marginTop: 4,
+    }
 });
