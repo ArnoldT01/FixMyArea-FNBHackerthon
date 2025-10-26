@@ -59,9 +59,11 @@ export default function Home() {
 
     const centerOnUser = () => {
         if (location && mapRef.current) {
+            const adjustedLatitude = location.latitude - 0.004;
+
             mapRef.current.animateToRegion(
                 {
-                    latitude: location.latitude,
+                    latitude: adjustedLatitude,
                     longitude: location.longitude,
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01,
