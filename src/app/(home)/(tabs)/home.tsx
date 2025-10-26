@@ -13,12 +13,15 @@ import * as Location from "expo-location";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { icons } from "@/constants";
 import IssueViewCard from "@/components/IssueViewCard";
+import { useRouter } from "expo-router";
 
 export default function Home() {
     const mapRef = useRef<MapView>(null);
     const bottomSheetRef = useRef<BottomSheet>(null);
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [watcher, setWatcher] = useState<Location.LocationSubscription | null>(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         (async () => {
@@ -76,7 +79,7 @@ export default function Home() {
     const snapPoints = useMemo(() => ["60%"], []);
 
     const handleReportIssue = () => {
-        Alert.alert("Report Issue", "You pressed the Report button!");
+        router.push("/(home)/report-issue");
     };
 
     return (
@@ -96,7 +99,7 @@ export default function Home() {
                 </TouchableOpacity>
 
                 <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
-                    <Text style={styles.reportButtonText}>Report an issue</Text>
+                    <Text style={styles.reportButtonText}>+ Report an issue</Text>
                 </TouchableOpacity>
 
                 <BottomSheet
