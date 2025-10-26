@@ -2,30 +2,20 @@ import IssueViewCard from "@/components/IssueViewCard";
 import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { FlatList, GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { fetchIssues, parseIssueImages } from "@/services/issuesService";
 
 export default function Issues() {
     const [issues, setIssues] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchIssues = async () => {
+        const loadIssues = async () => {
             setLoading(true);
-            const { data, error } = await supabase
-                .from("Issues")
-                .select("*")
-                .order("created_at", { ascending: false });
-
-            if (error) {
-                console.error("Error fetching issues:", error);
-            } else {
-                setIssues(data || []);
-            }
-
+            const data = await fetchIssues();
+            setIssues(data);
             setLoading(false);
         };
-
-        fetchIssues();
+        loadIssues();
     }, []);
 
     if (loading) {
@@ -56,7 +46,7 @@ export default function Issues() {
                                 location={item.location}
                                 date_reported={item.date_reported}
                                 description={item.description}
-                                images={Array.isArray(item.images) ? item.images : JSON.parse(item.images || "[]")}
+                                images={parseIssueImages(item.images)}
                             />
                         )}
                     />

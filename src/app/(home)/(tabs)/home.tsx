@@ -14,14 +14,16 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { icons } from "@/constants";
 import IssueViewCard from "@/components/IssueViewCard";
 import { useRouter } from "expo-router";
-import { supabase } from "@/lib/supabaseClient";
+import { fetchIssues, parseIssueImages } from "@/services/issuesService";
 
 export default function Home() {
     const mapRef = useRef<MapView>(null);
     const bottomSheetRef = useRef<BottomSheet>(null);
+
     const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [watcher, setWatcher] = useState<Location.LocationSubscription | null>(null);
     const [issues, setIssues] = useState<any[]>([]);
+    
     const router = useRouter();
 
     useEffect(() => {
@@ -62,12 +64,11 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        const fetchIssues = async () => {
-            const { data, error } = await supabase.from("Issues").select("*").order("created_at", { ascending: false });
-            if (error) console.error(error);
-            else setIssues(data);
+        const loadIssues = async () => {
+            const data = await fetchIssues();
+            setIssues(data);
         };
-        fetchIssues();
+        loadIssues();
     }, []);
 
     const centerOnUser = () => {
@@ -127,28 +128,17 @@ export default function Home() {
                         <Text style={styles.sheetTitle}>Latest Reported Issues</Text>
 
                         <View style={{ paddingBottom: 170 }}>
-                            {issues.map((issue) => {
-                                let images: string[] = [];
-                                try {
-                                    images = Array.isArray(issue.images)
-                                        ? issue.images
-                                        : JSON.parse(issue.images || "[]");
-                                } catch {
-                                    images = [];
-                                }
-
-                                return (
-                                    <IssueViewCard
-                                        key={issue.id}
-                                        category={issue.category}
-                                        status={issue.status}
-                                        location={issue.location}
-                                        date_reported={issue.date_reported}
-                                        description={issue.description}
-                                        images={images}
-                                    />
-                                );
-                            })}
+                            {issues.map((issue) => (
+                                <IssueViewCard
+                                    key={issue.id}
+                                    category={issue.category}
+                                    status={issue.status}
+                                    location={issue.location}
+                                    date_reported={issue.date_reported}
+                                    description={issue.description}
+                                    images={parseIssueImages(issue.images)}
+                                />
+                            ))}
 
                             <TouchableOpacity
                                 style={{ alignSelf: "center", marginTop: 20 }}
