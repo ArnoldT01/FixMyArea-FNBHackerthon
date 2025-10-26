@@ -4,7 +4,7 @@ export default function IssueViewCard() {
     return (
         <View style={styles.card}>
             <View style={styles.row}>
-                <Text style={styles.leftText}>Short problem description</Text>
+                <Text style={[styles.leftText, { fontSize: 20 }]}>Category</Text>
                 <Text style={styles.rightText}>Currently fixing or not</Text>
             </View>
             <View style={styles.row}>
