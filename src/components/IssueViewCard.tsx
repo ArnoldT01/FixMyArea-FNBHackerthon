@@ -17,27 +17,40 @@ export default function IssueViewCard({
     description,
     images,
 }: IssueProps) {
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Queued":
+            case "Fixing":
+                return "#FFA500";
+            case "Fixed":
+                return "green";
+            case "New":
+            default:
+                return "gray";
+        }
+    };
+
     return (
         <View style={styles.card}>
-        <View style={styles.row}>
-            <Text style={[styles.leftText, { fontSize: 18 }]}>{category}</Text>
-            <Text style={[styles.rightText, { color: status === "Queued" ? "#FFA500" : "#007AFF" }]}>
-            {status}
-            </Text>
-        </View>
+            <View style={styles.row}>
+                <Text style={[styles.leftText, { fontSize: 18 }]}>{category}</Text>
+                <Text style={[styles.rightText, { color: getStatusColor(status) }]}>
+                    {status}
+                </Text>
+            </View>
 
-        <View style={styles.row}>
-            <Text style={styles.leftText}>{location}</Text>
-            <Text style={styles.rightText}>{date_reported}</Text>
-        </View>
+            <View style={styles.row}>
+                <Text style={styles.leftText}>{location}</Text>
+                <Text style={styles.rightText}>{date_reported}</Text>
+            </View>
 
-        <Text style={styles.description}>{description}</Text>
+            <Text style={styles.description}>{description}</Text>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageRow}>
-            {images.map((img, idx) => (
-            <Image key={idx} source={{ uri: img }} style={styles.image} />
-            ))}
-        </ScrollView>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageRow}>
+                {images.map((img, idx) => (
+                    <Image key={idx} source={{ uri: img }} style={styles.image} />
+                ))}
+            </ScrollView>
         </View>
     );
 }
@@ -66,7 +79,6 @@ const styles = StyleSheet.create({
     rightText: {
         textAlign: "right",
         flex: 1,
-        color: "gray",
     },
     description: {
         marginTop: 4,
