@@ -165,7 +165,9 @@ export default function Home() {
                         <Text style={styles.sheetTitle}>Latest Reported Issues</Text>
 
                         <View style={{ paddingBottom: 170 }}>
-                            {issues.map((issue) => (
+                            {issues
+                                .slice(0, 3)
+                                .map((issue) => (
                                 <IssueViewCard
                                     key={issue.id}
                                     category={issue.category}
