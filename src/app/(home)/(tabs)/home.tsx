@@ -8,7 +8,7 @@ import {
     Image,
     Alert,
 } from "react-native";
-import MapView, { PROVIDER_DEFAULT } from "react-native-maps";
+import MapView, { Marker, PROVIDER_DEFAULT } from "react-native-maps";
 import * as Location from "expo-location";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { icons } from "@/constants";
@@ -107,7 +107,28 @@ export default function Home() {
                     showsUserLocation={true}
                     followsUserLocation={true}
                     showsMyLocationButton={false}
-                />
+                >
+                    {issues.map((issue) => {
+                        let location = { latitude: 0, longitude: 0 };
+
+                        if (issue.location) {
+                            try {
+                                location = JSON.parse(issue.location);
+                            } catch (e) {
+                                console.warn("Invalid location JSON:", issue.location);
+                            }
+                        }
+
+                        return (
+                            <Marker
+                                key={issue.id}
+                                coordinate={{ latitude: location.latitude, longitude: location.longitude }}
+                                title={issue.category}
+                                description={issue.description}
+                            />
+                        );
+                    })}
+                </MapView>
 
                 <TouchableOpacity style={styles.customLocationButton} onPress={centerOnUser}>
                     <Image source={icons.point} style={styles.locationIcon} />

@@ -14,7 +14,7 @@ export async function fetchIssues(): Promise<Issue[]> {
     const { data, error } = await supabase
         .from("Issues")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: true });
 
     if (error) {
         console.error("Error fetching issues:", error);
