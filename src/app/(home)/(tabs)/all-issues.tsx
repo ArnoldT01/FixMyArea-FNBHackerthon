@@ -3,19 +3,42 @@ import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { FlatList, GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
 import { useEffect, useState } from "react";
 import { fetchIssues, parseIssueImages } from "@/services/issuesService";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Issues() {
     const [issues, setIssues] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        let channel: any;
+
         const loadIssues = async () => {
             setLoading(true);
             const data = await fetchIssues();
             setIssues(data);
             setLoading(false);
+
+            channel = supabase
+                .channel('public:Issues')
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Issues' }, (payload) => {
+                    setIssues((prev) => [payload.new, ...prev]);
+                })
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Issues' }, (payload) => {
+                    setIssues((prev) =>
+                        prev.map((issue) => (issue.id === payload.new.id ? payload.new : issue))
+                    );
+                })
+                .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'Issues' }, (payload) => {
+                    setIssues((prev) => prev.filter((issue) => issue.id !== payload.old.id));
+                })
+                .subscribe();
         };
+
         loadIssues();
+
+        return () => {
+            if (channel) channel.unsubscribe();
+        };
     }, []);
 
     if (loading) {
