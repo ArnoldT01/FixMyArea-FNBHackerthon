@@ -15,6 +15,7 @@ import { icons } from "@/constants";
 import IssueViewCard from "@/components/IssueViewCard";
 import { useRouter } from "expo-router";
 import { fetchIssues, parseIssueImages } from "@/services/issuesService";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Home() {
     const mapRef = useRef<MapView>(null);
@@ -64,11 +65,26 @@ export default function Home() {
     }, []);
 
     useEffect(() => {
-        const loadIssues = async () => {
-            const data = await fetchIssues();
-            setIssues(data);
+        const channel = supabase
+            .channel('public:Issues')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'Issues' }, (payload) => {
+                setIssues((prev) => [payload.new, ...prev]);
+            })
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'Issues' }, (payload) => {
+                setIssues((prev) =>
+                    prev.map((issue) => (issue.id === payload.new.id ? payload.new : issue))
+                );
+            })
+            .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'Issues' }, (payload) => {
+                setIssues((prev) => prev.filter((issue) => issue.id !== payload.old.id));
+            })
+            .subscribe();
+
+        fetchIssues().then(setIssues);
+
+        return () => {
+            channel.unsubscribe();
         };
-        loadIssues();
     }, []);
 
     const centerOnUser = () => {
