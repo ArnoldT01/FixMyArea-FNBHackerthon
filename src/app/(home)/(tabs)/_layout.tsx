@@ -57,11 +57,11 @@ const Layout = () => {
             />
 
             <Tabs.Screen
-                name="about"
+                name="all-issues"
                 options={{
-                    title: "About",
+                    title: "AllIssues",
                     headerShown: false,
-                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} source={icons.chat} />,
+                    tabBarIcon: ({ focused }) => <TabIcon focused={focused} source={icons.list} />,
                 }}
             />
 

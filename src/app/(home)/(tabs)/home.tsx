@@ -82,6 +82,10 @@ export default function Home() {
         router.push("/(home)/report-issue");
     };
 
+    const handleViewAllIssues = () => {
+        router.push("/(home)/(tabs)/all-issues");
+    };
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={styles.container}>
@@ -117,7 +121,7 @@ export default function Home() {
                             <IssueViewCard />
                             <IssueViewCard />
 
-                            <TouchableOpacity style={{ alignSelf: "center", marginTop: 20 }}>
+                            <TouchableOpacity style={{ alignSelf: "center", marginTop: 20 }} onPress={handleViewAllIssues}>
                                 <Text style={{ color: "#007AFF", fontWeight: "600" }}>View all</Text>
                             </TouchableOpacity>
                         </View>
