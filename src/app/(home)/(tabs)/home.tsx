@@ -73,39 +73,46 @@ export default function Home() {
 
     const snapPoints = useMemo(() => ["60%"], []);
 
+    const handleReportIssue = () => {
+        Alert.alert("Report Issue", "You pressed the Report button!");
+    };
+
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={styles.container}>
-            <MapView
-                ref={mapRef}
-                provider={PROVIDER_DEFAULT}
-                style={styles.map}
-                showsUserLocation={true}
-                followsUserLocation={true}
-                showsMyLocationButton={false}
-            />
+            <View style={styles.container}>
+                <MapView
+                    ref={mapRef}
+                    provider={PROVIDER_DEFAULT}
+                    style={styles.map}
+                    showsUserLocation={true}
+                    followsUserLocation={true}
+                    showsMyLocationButton={false}
+                />
 
-            <TouchableOpacity style={styles.customLocationButton} onPress={centerOnUser}>
-                <Image source={icons.point} style={styles.locationIcon} />
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.customLocationButton} onPress={centerOnUser}>
+                    <Image source={icons.point} style={styles.locationIcon} />
+                </TouchableOpacity>
 
-            <BottomSheet
-                ref={bottomSheetRef}
-                index={0}
-                snapPoints={snapPoints}
-                backgroundStyle={styles.sheetBackground}
-                handleIndicatorStyle={styles.handle}
-            >
-                <BottomSheetView style={styles.sheetContent}>
-                    <Text style={styles.sheetTitle}>Reported Issues</Text>
+                <TouchableOpacity style={styles.reportButton} onPress={handleReportIssue}>
+                    <Text style={styles.reportButtonText}>Report an issue</Text>
+                </TouchableOpacity>
 
-                    <IssueViewCard />
-                    <IssueViewCard />
-                    <IssueViewCard />
+                <BottomSheet
+                    ref={bottomSheetRef}
+                    index={0}
+                    snapPoints={snapPoints}
+                    backgroundStyle={styles.sheetBackground}
+                    handleIndicatorStyle={styles.handle}
+                >
+                    <BottomSheetView style={styles.sheetContent}>
+                        <Text style={styles.sheetTitle}>Reported Issues</Text>
 
-                </BottomSheetView>
-            </BottomSheet>
-        </View>
+                        <IssueViewCard />
+                        <IssueViewCard />
+                        <IssueViewCard />
+                    </BottomSheetView>
+                </BottomSheet>
+            </View>
         </GestureHandlerRootView>
     );
 }
@@ -131,6 +138,25 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     locationIcon: { width: 20, height: 20, resizeMode: "contain" },
+    reportButton: {
+        position: "absolute",
+        top: 20,
+        right: 20,
+        backgroundColor: "#007AFF",
+        paddingVertical: 12,
+        paddingHorizontal: 16,
+        borderRadius: 20,
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 4,
+        zIndex: 20,
+    },
+    reportButtonText: {
+        color: "#fff",
+        fontWeight: "600",
+        fontSize: 14,
+    },
     sheetBackground: {
         backgroundColor: "#fff",
         borderTopLeftRadius: 20,
