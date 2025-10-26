@@ -30,21 +30,35 @@ export default function IssueViewCard({
         }
     };
 
+    const formattedLocation = (() => {
+        if (typeof location === "string") {
+            try {
+                const locObj = JSON.parse(location);
+                const lat = locObj.latitude.toFixed(5);
+                const lon = locObj.longitude.toFixed(5);
+                return `${lat}, ${lon}`;
+            } catch {
+                return location;
+            }
+        }
+        return location;
+    })();
+
     return (
         <View style={styles.card}>
             <View style={styles.row}>
                 <Text style={[styles.leftText, { fontSize: 18 }]}>{category}</Text>
-                <Text style={[styles.rightText, { color: getStatusColor(status) }]}>
+                <Text style={[styles.rightText, { color: getStatusColor(status), fontWeight: "bold" }]}>
                     {status}
                 </Text>
             </View>
 
             <View style={styles.row}>
-                <Text style={styles.leftText}>{location}</Text>
+                <Text style={styles.leftText} numberOfLines={1}>{formattedLocation}</Text>
                 <Text style={styles.rightText}>{date_reported}</Text>
             </View>
 
-            <Text style={styles.description}>{description}</Text>
+            <Text style={styles.description} numberOfLines={1}>{description}</Text>
 
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageRow}>
                 {images.map((img, idx) => (
@@ -81,15 +95,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     description: {
-        marginTop: 4,
         color: "#555",
     },
     imageRow: {
         marginTop: 10,
     },
     image: {
-        width: 70,
-        height: 70,
+        width: 50,
+        height: 50,
         borderRadius: 8,
         marginRight: 8,
     },
