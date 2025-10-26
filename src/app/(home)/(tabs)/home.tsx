@@ -76,7 +76,7 @@ export default function Home() {
         }
     };
 
-    const snapPoints = useMemo(() => ["60%"], []);
+    const snapPoints = useMemo(() => ["40%"], []);
 
     const handleReportIssue = () => {
         router.push("/(home)/report-issue");
@@ -110,11 +110,18 @@ export default function Home() {
                     handleIndicatorStyle={styles.handle}
                 >
                     <BottomSheetView style={styles.sheetContent}>
-                        <Text style={styles.sheetTitle}>Reported Issues</Text>
+                        <Text style={styles.sheetTitle}>Latest Reported Issues</Text>
 
-                        <IssueViewCard />
-                        <IssueViewCard />
-                        <IssueViewCard />
+                        <View style={{ paddingBottom: 170, }}>
+                            <IssueViewCard />
+                            <IssueViewCard />
+                            <IssueViewCard />
+
+                            <TouchableOpacity style={{ alignSelf: "center", marginTop: 20 }}>
+                                <Text style={{ color: "#007AFF", fontWeight: "600" }}>View all</Text>
+                            </TouchableOpacity>
+                        </View>
+
                     </BottomSheetView>
                 </BottomSheet>
             </View>
