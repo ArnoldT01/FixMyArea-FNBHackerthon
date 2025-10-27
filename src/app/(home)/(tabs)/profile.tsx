@@ -2,6 +2,7 @@ import { Text, TouchableOpacity, View, StyleSheet, Image, TextInput } from "reac
 import { Picker } from '@react-native-picker/picker';
 import { useUser } from "@clerk/clerk-expo";
 import { useState } from "react";
+import { SignOutButton } from "@/components/SignOutButton";
 
 export default function Profile() {
     const { user } = useUser();
@@ -11,7 +12,6 @@ export default function Profile() {
 
     return (
         <View style={styles.container}>
-
             <View style={styles.header}>
                 <Text style={styles.title}>Profile</Text>
             
@@ -78,6 +78,8 @@ export default function Profile() {
                 style={styles.input}
                 editable={false}
             />
+
+            <SignOutButton/>
         </View>
     );
 }
