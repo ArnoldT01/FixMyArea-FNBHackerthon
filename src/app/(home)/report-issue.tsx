@@ -1,14 +1,15 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Image, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function ReportIssue() {
     const router = useRouter();
 
-    const [category, setCategory] = useState("water");
+    const [category, setCategory] = useState("Water");
     const [description, setDescription] = useState("");
     const [images, setImages] = useState<string[]>([]);
     const [address, setAddress] = useState("");
@@ -34,12 +35,43 @@ export default function ReportIssue() {
         }
 
         const loc = await Location.getCurrentPositionAsync({});
-        setAddress(`${loc.coords.latitude}, ${loc.coords.longitude}`);
+        const coords = {
+            latitude: loc.coords.latitude,
+            longitude: loc.coords.longitude,
+        };
+        setAddress(JSON.stringify(coords));
     };
 
-    const handleSubmit = () => {
-        console.log({ category, description, images, address });
-        alert("Issue submitted!");
+    const handleSubmit = async () => {
+        if (!description || !address) {
+            Alert.alert("Missing info", "Please provide a description and select a location.");
+            return;
+        }
+
+        try {
+            const { error } = await supabase
+                .from("Issues")
+                .insert([
+                    {
+                        category,
+                        status: "New",
+                        location: address,
+                        description,
+                        images: null,
+                    },
+                ]);
+
+            if (error) {
+                console.error(error);
+                Alert.alert("Error", "Failed to submit issue.");
+            } else {
+                Alert.alert("Success", "Issue submitted successfully!");
+                router.back();
+            }
+        } catch (err) {
+            console.error(err);
+            Alert.alert("Error", "An unexpected error occurred.");
+        }
     };
 
     return (
@@ -53,7 +85,6 @@ export default function ReportIssue() {
             </View>
 
             <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 20 }}>
-                {/* Category Picker */}
                 <Text style={styles.label}>Category</Text>
                 <View style={styles.pickerContainer}>
                     <Picker
@@ -61,13 +92,12 @@ export default function ReportIssue() {
                         onValueChange={(itemValue) => setCategory(itemValue)}
                         style={styles.picker}
                     >
-                        <Picker.Item label="Water" value="water" />
-                        <Picker.Item label="Electricity" value="electricity" />
-                        <Picker.Item label="Transport" value="transport" />
+                        <Picker.Item label="Water" value="Water" />
+                        <Picker.Item label="Electricity" value="Electricity" />
+                        <Picker.Item label="Transport" value="Transport" />
                     </Picker>
                 </View>
 
-                {/* Description */}
                 <Text style={styles.label}>Description</Text>
                 <TextInput
                     value={description}
@@ -78,7 +108,6 @@ export default function ReportIssue() {
                     numberOfLines={4}
                 />
 
-                {/* Images */}
                 <Text style={styles.label}>Images</Text>
                 <TouchableOpacity style={styles.uploadButton} onPress={pickImages}>
                     <Text style={styles.uploadButtonText}>Upload Images</Text>
@@ -89,13 +118,12 @@ export default function ReportIssue() {
                     ))}
                 </ScrollView>
 
-                {/* Address */}
                 <Text style={styles.label}>Address</Text>
                 <View style={styles.addressRow}>
                     <TextInput
                         value={address}
                         onChangeText={setAddress}
-                        placeholder="Enter address"
+                        placeholder="Enter coordinates or use current location"
                         style={[styles.input, { flex: 1 }]}
                     />
                     <TouchableOpacity style={styles.locationButton} onPress={useCurrentLocation}>
@@ -104,7 +132,6 @@ export default function ReportIssue() {
                 </View>
             </ScrollView>
 
-            {/* Submit button */}
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
