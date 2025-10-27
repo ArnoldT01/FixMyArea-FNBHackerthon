@@ -39,7 +39,11 @@ export default function IssueDetails() {
                 <BottomSheetView style={styles.sheet}>
                     <Text style={styles.title}>{parsed.category}</Text>
                     <Text style={[styles.status, { color: "gray" }]}>{parsed.status}</Text>
-                    <Text style={styles.description}>{parsed.description}</Text>
+                    <View style={styles.descriptionContainer}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            <Text style={styles.description}>{parsed.description}</Text>
+                        </ScrollView>
+                    </View>
 
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
                         {images.map((img, i) => (
@@ -83,6 +87,10 @@ const styles = StyleSheet.create({
     description: {
         fontSize: 15,
         color: "#555",
+        marginBottom: 10,
+    },
+    descriptionContainer: {
+        maxHeight: 120,
         marginBottom: 10,
     },
 });
