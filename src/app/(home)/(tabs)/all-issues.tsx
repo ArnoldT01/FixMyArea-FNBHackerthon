@@ -4,6 +4,7 @@ import { FlatList, GestureHandlerRootView, ScrollView } from "react-native-gestu
 import { useEffect, useState } from "react";
 import { fetchIssues, parseIssueImages } from "@/services/issuesService";
 import { subscribeToIssues } from "@/services/issueSubscriptionService";
+import { router } from "expo-router";
 
 export default function Issues() {
     const [issues, setIssues] = useState<any[]>([]);
@@ -59,6 +60,12 @@ export default function Issues() {
                                 date_reported={item.date_reported}
                                 description={item.description}
                                 images={parseIssueImages(item.images)}
+                                onPress={() =>
+                                    router.push({
+                                        pathname: "/(home)/issue-details",
+                                        params: { issue: JSON.stringify(item) },
+                                    })
+                                }
                             />
                         )}
                     />

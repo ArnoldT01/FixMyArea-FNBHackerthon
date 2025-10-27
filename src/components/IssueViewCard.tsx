@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, Image, ScrollView } from "react-native";
+import { Text, View, StyleSheet, Image, ScrollView, TouchableOpacity } from "react-native";
 
 type IssueProps = {
     category: string;
@@ -7,16 +7,12 @@ type IssueProps = {
     date_reported: string;
     description: string;
     images: string[];
+    onPress?: () => void;
 };
 
-export default function IssueViewCard({
-    category,
-    status,
-    location,
-    date_reported,
-    description,
-    images,
-}: IssueProps) {
+export default function IssueViewCard({...props}: IssueProps) {
+    const { category, status, location, date_reported, description, images, onPress } = props;
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case "Queued":
@@ -45,27 +41,29 @@ export default function IssueViewCard({
     })();
 
     return (
-        <View style={styles.card}>
-            <View style={styles.row}>
-                <Text style={[styles.leftText, { fontSize: 18 }]}>{category}</Text>
-                <Text style={[styles.rightText, { color: getStatusColor(status), fontWeight: "bold" }]}>
-                    {status}
-                </Text>
+        <TouchableOpacity onPress={onPress}>
+            <View style={styles.card}>
+                <View style={styles.row}>
+                    <Text style={[styles.leftText, { fontSize: 18 }]}>{category}</Text>
+                    <Text style={[styles.rightText, { color: getStatusColor(status), fontWeight: "bold" }]}>
+                        {status}
+                    </Text>
+                </View>
+
+                <View style={styles.row}>
+                    <Text style={styles.leftText} numberOfLines={1}>{formattedLocation}</Text>
+                    <Text style={styles.rightText}>{date_reported}</Text>
+                </View>
+
+                <Text style={styles.description} numberOfLines={1}>{description}</Text>
+
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageRow}>
+                    {images.map((img, idx) => (
+                        <Image key={idx} source={{ uri: img }} style={styles.image} />
+                    ))}
+                </ScrollView>
             </View>
-
-            <View style={styles.row}>
-                <Text style={styles.leftText} numberOfLines={1}>{formattedLocation}</Text>
-                <Text style={styles.rightText}>{date_reported}</Text>
-            </View>
-
-            <Text style={styles.description} numberOfLines={1}>{description}</Text>
-
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imageRow}>
-                {images.map((img, idx) => (
-                    <Image key={idx} source={{ uri: img }} style={styles.image} />
-                ))}
-            </ScrollView>
-        </View>
+        </TouchableOpacity>
     );
 }
 

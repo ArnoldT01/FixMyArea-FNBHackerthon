@@ -167,6 +167,10 @@ export default function Home() {
                                     date_reported={issue.date_reported}
                                     description={issue.description}
                                     images={parseIssueImages(issue.images)}
+                                    onPress={() => router.push({ 
+                                        pathname: "/(home)/issue-details", 
+                                        params: { issue: JSON.stringify(issue) } 
+                                    })}
                                 />
                             ))}
 
