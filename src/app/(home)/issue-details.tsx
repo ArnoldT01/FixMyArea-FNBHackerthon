@@ -5,16 +5,30 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useMemo } from "react";
 import { parseIssueImages } from "@/services/issuesService";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useEffect, useRef } from "react";
 
 export default function IssueDetails() {
     const { issue } = useLocalSearchParams();
     const router = useRouter();
+    const mapRef = useRef<MapView>(null);
 
     const parsed = JSON.parse(issue as string);
     const images = parseIssueImages(parsed.images);
 
     const coords = typeof parsed.location === "string" ? JSON.parse(parsed.location) : parsed.location;
     const snapPoints = useMemo(() => ["40%", "90%"], []);
+
+    const zoomDelta = 0.002;
+    useEffect(() => {
+        if (mapRef.current) {
+            mapRef.current.animateToRegion({
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                latitudeDelta: zoomDelta,
+                longitudeDelta: zoomDelta,
+            }, 500);
+        }
+    }, [coords]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -36,12 +50,13 @@ export default function IssueDetails() {
         <GestureHandlerRootView style={{ flex: 1 }}>
             <View style={{ flex: 1 }}>
                 <MapView
+                    ref={mapRef}
                     style={{ flex: 1 }}
                     initialRegion={{
                         latitude: coords.latitude,
                         longitude: coords.longitude,
-                        latitudeDelta: 0.005,
-                        longitudeDelta: 0.005,
+                        latitudeDelta: zoomDelta,
+                        longitudeDelta: zoomDelta,
                     }}
                 >
                     <Marker
