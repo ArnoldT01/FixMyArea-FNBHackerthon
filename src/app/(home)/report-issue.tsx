@@ -123,7 +123,20 @@ export default function ReportIssue() {
                 </TouchableOpacity>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
                     {images.map((uri, index) => (
-                        <Image key={index} source={{ uri }} style={styles.previewImage} />
+                        <View key={index} style={styles.imageWrapper}>
+                            <Image source={{ uri }} style={styles.previewImage} />
+
+                            <View style={styles.imageCounter}>
+                                <Text style={styles.imageCounterText}>{index + 1}</Text>
+                            </View>
+
+                            <TouchableOpacity
+                                style={styles.removeButton}
+                                onPress={() => setImages(images.filter((_, i) => i !== index))}
+                            >
+                                <Text style={styles.removeButtonText}>×</Text>
+                            </TouchableOpacity>
+                        </View>
                     ))}
                 </ScrollView>
 
@@ -154,22 +167,21 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: "bold" },
     closeButton: { backgroundColor: "#007AFF", paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8 },
     closeButtonText: { color: "#fff", fontWeight: "600" },
-
     label: { fontSize: 16, fontWeight: "500", marginBottom: 8 },
-
     pickerContainer: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginBottom: 16 },
     picker: { width: "100%", height: 50 },
-
     textArea: { borderWidth: 1, borderColor: "#ccc", borderRadius: 10, padding: 12, textAlignVertical: "top", marginBottom: 16 },
-
     uploadButton: { backgroundColor: "#007AFF", paddingVertical: 12, borderRadius: 10, alignItems: "center", marginBottom: 10 },
     uploadButtonText: { color: "#fff", fontWeight: "600" },
     previewImage: { width: 80, height: 80, borderRadius: 8, marginRight: 10 },
-
     addressRow: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 20 },
     input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10 },
     locationButton: { backgroundColor: "#3db67e", paddingHorizontal: 10, paddingVertical: 10, borderRadius: 10 },
-
     submitButton: { backgroundColor: "#007AFF", paddingVertical: 14, borderRadius: 10, alignItems: "center", marginTop: 10, width: '60%', alignSelf: "center" },
     submitButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    imageWrapper: { position: "relative", marginRight: 10, },
+    imageCounter: { position: "absolute", top: 4, left: 4, backgroundColor: "rgba(0,0,0,0.6)", borderRadius: 10, paddingHorizontal: 6, paddingVertical: 2, zIndex: 2, },
+    imageCounterText: { color: "#fff", fontSize: 12, fontWeight: "600", },
+    removeButton: { position: "absolute", bottom: 4, right: 4, backgroundColor: "rgba(255,0,0,0.8)", borderRadius: 12, width: 22, height: 22, alignItems: "center", justifyContent: "center", zIndex: 2, },
+    removeButtonText: { color: "#fff", fontWeight: "bold", fontSize: 14, },
 });
