@@ -52,7 +52,7 @@ export default function ReportIssue() {
     };
 
     const handleSubmit = async () => {
-        if (!category || !description || !address) {
+        if (!category || !description || !address || images.length === 0) {
             Alert.alert("Missing info", "Please make sure your Category, Description, Images, Address are filled.");
             return;
         }
