@@ -14,7 +14,7 @@ export default function IssueDetails() {
     const images = parseIssueImages(parsed.images);
 
     const coords = typeof parsed.location === "string" ? JSON.parse(parsed.location) : parsed.location;
-    const snapPoints = useMemo(() => ["90%"], []);
+    const snapPoints = useMemo(() => ["40%", "90%"], []);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -57,27 +57,25 @@ export default function IssueDetails() {
 
                 <BottomSheet snapPoints={snapPoints} index={0}>
                     <BottomSheetView style={styles.sheet}>
-                        <Text style={styles.title}>{parsed.category}</Text>
-                        <Text style={[styles.status, { color: getStatusColor(parsed.status) }]}>{parsed.status}</Text>
+                        <ScrollView 
+                            contentContainerStyle={{ paddingBottom: 20 }}
+                            showsVerticalScrollIndicator={true}
+                            nestedScrollEnabled={true}
+                        >
+                            <Text style={styles.title}>{parsed.category}</Text>
+                            <Text style={[styles.status, { color: getStatusColor(parsed.status) }]}>{parsed.status}</Text>
+                            <Text style={styles.description}>{parsed.description}</Text>
 
-                        <View style={styles.descriptionContainer}>
-                            <ScrollView 
-                                showsVerticalScrollIndicator={true} 
-                                nestedScrollEnabled={true}
-                            >
-                                <Text style={styles.description}>{parsed.description}</Text>
-
-                                <View style={styles.imagesContainer}>
-                                    {images.map((img, i) => (
-                                        <Image
-                                            key={i}
-                                            source={{ uri: img }}
-                                            style={[styles.image, { width: imageSize, height: imageSize }]}
-                                        />
-                                    ))}
-                                </View>
-                            </ScrollView>
-                        </View>
+                            <View style={styles.imagesContainer}>
+                                {images.map((img, i) => (
+                                    <Image
+                                        key={i}
+                                        source={{ uri: img }}
+                                        style={[styles.image, { width: imageSize, height: imageSize }]}
+                                    />
+                                ))}
+                            </View>
+                        </ScrollView>
                     </BottomSheetView>
                 </BottomSheet>
             </View>
@@ -97,20 +95,16 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     sheet: {
-        flex: 1,
         padding: 16,
     },
     title: {
         fontSize: 20,
         fontWeight: "bold",
+        marginBottom: 8,
     },
     status: {
         fontSize: 16,
-        marginBottom: 10,
-    },
-    descriptionContainer: {
-        flex: 1,
-        marginBottom: 10,
+        marginBottom: 12,
     },
     description: {
         fontSize: 15,
