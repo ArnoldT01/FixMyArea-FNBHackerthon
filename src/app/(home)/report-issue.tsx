@@ -22,8 +22,17 @@ export default function ReportIssue() {
         });
 
         if (!result.canceled) {
-            const uris = result.assets.map((asset) => asset.uri);
-            setImages([...images, ...uris]);
+            const selectedUris = result.assets.map((asset) => asset.uri);
+
+            const total = images.length + selectedUris.length;
+
+            if (total > 10) {
+                Alert.alert("Limit Reached", "You can only upload up to 10 images.");
+                const remaining = 10 - images.length;
+                setImages([...images, ...selectedUris.slice(0, remaining)]);
+            } else {
+                setImages([...images, ...selectedUris]);
+            }
         }
     };
 
@@ -43,8 +52,8 @@ export default function ReportIssue() {
     };
 
     const handleSubmit = async () => {
-        if (!description || !address) {
-            Alert.alert("Missing info", "Please provide a description and select a location.");
+        if (!category || !description || !address) {
+            Alert.alert("Missing info", "Please make sure your Category, Description, Images, Address are filled.");
             return;
         }
 
