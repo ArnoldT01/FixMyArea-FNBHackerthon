@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MapView, { Marker } from "react-native-maps";
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { useMemo } from "react";
 import { parseIssueImages } from "@/services/issuesService";
@@ -14,49 +14,73 @@ export default function IssueDetails() {
     const images = parseIssueImages(parsed.images);
 
     const coords = typeof parsed.location === "string" ? JSON.parse(parsed.location) : parsed.location;
-    const snapPoints = useMemo(() => ["50%"], []);
+    const snapPoints = useMemo(() => ["90%"], []);
+
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case "Queued":
+            case "Fixing":
+                return "#FFA500";
+            case "Fixed":
+                return "green";
+            case "New":
+            default:
+                return "gray";
+        }
+    };
+
+    const screenWidth = Dimensions.get("window").width;
+    const imageSize = (screenWidth - 48) / 2;
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={{ flex: 1 }}>
-            <MapView
-                style={{ flex: 1 }}
-                initialRegion={{
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                }}
-            >
-                <Marker coordinate={coords} title={parsed.category} description={parsed.description} />
-            </MapView>
+            <View style={{ flex: 1 }}>
+                <MapView
+                    style={{ flex: 1 }}
+                    initialRegion={{
+                        latitude: coords.latitude,
+                        longitude: coords.longitude,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                    }}
+                >
+                    <Marker
+                        coordinate={coords}
+                        title={parsed.category}
+                        description={parsed.description}
+                    />
+                </MapView>
 
-            <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                <Text style={{ color: "#fff" }}>Back</Text>
-            </TouchableOpacity>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <Text style={{ color: "#fff" }}>Back</Text>
+                </TouchableOpacity>
 
-            <BottomSheet snapPoints={snapPoints} index={0}>
-                <BottomSheetView style={styles.sheet}>
-                    <Text style={styles.title}>{parsed.category}</Text>
-                    <Text style={[styles.status, { color: "gray" }]}>{parsed.status}</Text>
-                    <View style={styles.descriptionContainer}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            <Text style={styles.description}>{parsed.description}</Text>
-                        </ScrollView>
-                    </View>
+                <BottomSheet snapPoints={snapPoints} index={0}>
+                    <BottomSheetView style={styles.sheet}>
+                        <Text style={styles.title}>{parsed.category}</Text>
+                        <Text style={[styles.status, { color: getStatusColor(parsed.status) }]}>{parsed.status}</Text>
 
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-                        {images.map((img, i) => (
-                            <Image
-                                key={i}
-                                source={{ uri: img }}
-                                style={{ width: 120, height: 120, borderRadius: 10, marginRight: 10 }}
-                            />
-                        ))}
-                    </ScrollView>
-                </BottomSheetView>
-            </BottomSheet>
-        </View>
+                        <View style={styles.descriptionContainer}>
+                            <ScrollView 
+                                showsVerticalScrollIndicator={true} 
+                                nestedScrollEnabled={true}
+                            >
+                                <Text style={styles.description}>{parsed.description}</Text>
+
+                                <View style={styles.imagesContainer}>
+                                    {images.map((img, i) => (
+                                        <Image
+                                            key={i}
+                                            source={{ uri: img }}
+                                            style={[styles.image, { width: imageSize, height: imageSize }]}
+                                        />
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        </View>
+                    </BottomSheetView>
+                </BottomSheet>
+            </View>
         </GestureHandlerRootView>
     );
 }
@@ -84,13 +108,22 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 10,
     },
+    descriptionContainer: {
+        flex: 1,
+        marginBottom: 10,
+    },
     description: {
         fontSize: 15,
         color: "#555",
-        marginBottom: 10,
+        marginBottom: 12,
     },
-    descriptionContainer: {
-        maxHeight: 120,
-        marginBottom: 10,
+    imagesContainer: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-between",
+    },
+    image: {
+        borderRadius: 8,
+        marginBottom: 8,
     },
 });
