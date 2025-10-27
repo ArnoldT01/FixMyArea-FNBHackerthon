@@ -26,9 +26,9 @@ export default function ReportIssue() {
 
             const total = images.length + selectedUris.length;
 
-            if (total > 10) {
-                Alert.alert("Limit Reached", "You can only upload up to 10 images.");
-                const remaining = 10 - images.length;
+            if (total > 8) {
+                Alert.alert("Limit Reached", "You can only upload up to 8 images.");
+                const remaining = 8 - images.length;
                 setImages([...images, ...selectedUris.slice(0, remaining)]);
             } else {
                 setImages([...images, ...selectedUris]);
